@@ -1,12 +1,28 @@
 const fs = require("fs").promises;
 const path = require("path");
+const { json } = require("stream/consumers");
 
 const filePath = path.join(__dirname, "../usersData.json");
 
 const readData = async () =>{
-  users = await fs.readFile(filePath , "utf-8");
-  // console.log(" users data ",users)
-  return JSON.parse(users);
+  try {
+    const users = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(users);
+  } catch (error) {
+    return error
+  }
+ 
+}
+
+const writeFile = async (data) =>{
+  try {
+    console.log("data =>", data)
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2))
+    return res.json(users)
+  } catch (error) {
+    return error
+  }
+
 }
 
 
@@ -23,9 +39,13 @@ try {
   const users = await readData()
   console.log(users)
   if(users.length){
-    const userNotFound = users.filter((user) => user.email !== email);
+    const userNotFound = users.filter((user) => user.email == email);
     console.log(userNotFound)
-    if (userNotFound.length == 0) {
+    if (userNotFound.length > 0) {
+      res.status(500).json({ message: "user with this email already exists!" });
+      
+    } else {
+     
       const id = users.length;
       const newUser = {
         id: id + 1,
@@ -34,10 +54,13 @@ try {
         password,
         role: false,
       };
-      // users.push(newUser);
+      users.push(newUser);
+
+      const final = await writeFile(users)
+      console.log(final)
+
       res.status(200).json(newUser);
-    } else {
-      res.status(500).json({ message: "user with this email already exists!" });
+      res.send({ message: "welcome" });
     }
   }
 } catch (error) {

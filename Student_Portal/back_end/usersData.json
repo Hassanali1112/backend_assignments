@@ -4,6 +4,13 @@
     "name": "hassan ali",
     "email": "hassanali0111272@gmail.com",
     "password": "hassan0312@gmail",
-    "role" : true
+    "role": true
+  },
+  {
+    "id": 2,
+    "name": "hassan ali",
+    "email": "hassanali011127@gmail.com",
+    "password": "hassan0312@gmail",
+    "role": false
   }
 ]
