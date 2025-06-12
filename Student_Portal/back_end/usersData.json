@@ -1,11 +1,10 @@
 [
   {
-    "id": "1",
+    "id": 1,
     "name": "hassan ali",
     "email": "hassanali0111272@gmail.com",
     "password": "hassan0312@gmail",
-    "role": true,
-    "jswt": "you.are.welcome"
+    "role": true
   },
   {
     "id": 2,

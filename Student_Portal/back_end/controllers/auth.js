@@ -199,27 +199,98 @@ const getUser = async (req, res) => {
 //   // }
 // };
 
-const checkSession = (req, res) => {
-  if (!loginUser) {
-    res.status(500).json({ message: null });
-  } else {
-    res.status(200).json({ message: loginUser.jswt });
+const checkSession = async (req, res) => {
+  // console.log(req.body)
+  
+  const {id} = req.body
+  console.log(id)
+
+  if(!id){
+    res.status(404).json({message : new Error()} )
   }
+
+  try {
+  const users = await readData();
+  // console.log(users)
+
+  const user = users.filter(userObj => userObj.id === id)
+  console.log(user)
+  if(user.length){
+    if ("jswt" in user[0]) {
+      res.status(200).json({ session: user[0].jswt });
+    } else {
+      res.status(404).json({session : null})
+    }
+  } else {
+    res.status(404).json({ session : null });
+  }
+     
+  } catch (error) {
+    res.status(404).json({ session : new Error()})
+  }
+
+  // if (!loginUser) {
+  //   res.status(500).json({ message: null });
+  // } else {
+  //   res.status(200).json({ message: loginUser.jswt });
+  // }
 };
 
-const logout = (req, res) => {
-  let userIndex = null;
+const logout = async (req, res) => {
+  
+  let userIndex = null
+
   const { id } = req.body;
+
   if (!id) {
-    return null;
-  } else {
-    const userFound = users.filter((user, index) => {
-      if (user.id === id) {
-        userIndex = index;
-      }
-    });
-    delete users[userIndex].jswt;
+    res.status(404).json({ message: new Error() });
   }
+
+  try {
+    const users = await readData();
+
+    if (!users.length) {
+      return res.status(404).json({ message: "users not found" });
+    }
+
+    const user = users.find((userObj, index) => {
+      if (userObj.id === id) {
+        userIndex = index;
+        console.log(userIndex)
+        return true;
+      }
+      return false;
+    });
+
+    console.log(user);
+
+    // console.log(user)
+    
+    if (Object.keys(user).length !== 0) {
+      if ("jswt" in user) {
+        console.log("")
+        delete users[userIndex].jswt
+        await writeFile(users)
+        res.status(200).json({ message : "log out succesfully" });
+      } else {
+        res.status(404).json({ message: null });
+      }
+    } else {
+      res.status(404).json({ message: null });
+    }
+  } catch (error) {
+    res.status(404).json({ message: "no data" });
+  }
+  // if (!id) {
+  //   return null;
+  // } else {
+  //   const userFound = users.filter((user, index) => {
+  //     if (user.id === id) {
+  //       userIndex = index;
+  //     }
+  //   });
+  //   delete users[userIndex].jswt;
+  // }
 };
 
 module.exports = { createNewUser, getUser, checkSession, logout };
