@@ -3,28 +3,44 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { Link } from "react-router-dom";
 import SocialButton from "../../components/SocialButton";
+import axios from "axios";
+import Loader from "../../components/Loader";
 
-const SignUp = () => {
+
+const SignUp =  () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const [loader, setLoader] = useState(false)
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-    console.log(form)
-    alert("Account created!");
-    setForm({ name: "", email: "", password: "", confirmPassword: "" });
+    try {
+      
+      setLoader(true)
+      const data = await axios.post("/api/auth/signup", form);
+      if(data) console.log(data)
+        
+    } catch (error) {
+      console.log(error)
+    }
+    finally{
+      setLoader(false)
+      setForm({ name: "", email: "", password: "", confirmPassword: "" });
+    }
+   
+    
   };
 
   return (
@@ -77,8 +93,13 @@ const SignUp = () => {
               onChange={handleChange}
               placeholder="••••••••"
             />
-            <Button type="submit" className="w-full">
-              Create Account
+            <Button
+              type="submit"
+              className="w-full flex justify-center gap-3 items-center"
+            >
+              { loader ? <Loader /> : '' }
+              
+               Create Account
             </Button>
             <p className="text-sm text-center text-gray-600">
               Already have an account?{" "}

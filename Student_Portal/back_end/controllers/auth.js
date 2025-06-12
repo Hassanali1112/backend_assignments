@@ -16,7 +16,6 @@ const readData = async () =>{
 
 const writeFile = async (data) =>{
   try {
-    console.log("data =>", data)
     await fs.writeFile(filePath, JSON.stringify(data, null, 2))
     return res.json(users)
   } catch (error) {
@@ -26,9 +25,10 @@ const writeFile = async (data) =>{
 }
 
 
-
+// sign up function
 const createNewUser = async (req, res) => {
   console.log("create user route")
+
   const { name, email, password } = req.body;
   
   if (!name || !email || !password) {
@@ -42,7 +42,7 @@ try {
     const userNotFound = users.filter((user) => user.email == email);
     console.log(userNotFound)
     if (userNotFound.length > 0) {
-      res.status(500).json({ message: "user with this email already exists!" });
+      res.status(409).json({ message: "user with this email already exists!" });
       
     } else {
      
@@ -60,7 +60,7 @@ try {
       console.log(final)
 
       res.status(200).json(newUser);
-      res.send({ message: "welcome" });
+      
     }
   }
 } catch (error) {
@@ -69,51 +69,135 @@ try {
   
 };
 
+// login function
 
 const getUser = async (req, res) => {
   let userIndex = null;
-  
-  const { email, password } = req.body
 
-  if(!email || !password){
-    return res.status(500).send({message : "all fields are required"})
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
   }
 
   try {
-    const users = await readData()
-    console.log(users)
-    if(users.length){
-    const userNotFound = users.filter((user) => user.email === email && user.password === password);
-    res.status(200).json(userNotFound)
+    const users = await readData();
 
-    } else {
-      res.status(500).json({message : "email and password incorrect"})
+    if (!users.length) {
+      return res.status(404).json({ message: "No users found" });
     }
-    
-  } catch (error) {
-    res.send({message : error})
-  }
 
-  const userFound = users.filter((user, index) => {
-    if (user.email === email) {
-      if (user.password === password) {
-        loginUser = [{ ...userFound, jswt: "you.are.welcome!" }];
-        res.status(200).json({ message: "sucess", user: loginUser });
+    const user = users.find((userObj, index) => {
+      if (userObj.email === email) {
         userIndex = index;
-      } else {
-        return res.status(200).json({ message: "password is incorrect!" });
+        return true;
       }
-    } else {
-      return res
-        .status(200)
-        .json({ message: "user with this email not exists!" });
+      return false;
+    });
+
+
+    console.log(user)
+
+    if (!user) {
+      return res.status(404).json({ message: "Email is incorrect!" });
     }
-  });
-  if (userFound.length) {
-    users[userIndex].jswt = "you.are.welcome!";
-    return;
+
+    if (user.password !== password) {
+      return res.status(401).json({ message: "Password is incorrect!" });
+    }
+
+    users[userIndex].jswt = "you.are.welcome";
+    await writeFile(users);
+
+    return res.status(200).json({
+      user,
+      session: users[userIndex].jswt,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+// const getUser = async (req, res) => {
+//   let userIndex = null
+
+//   // console.log(req.body)
+  
+//   const { email, password } = req.body
+
+//   if(!email || !password){
+//     return res.status(500).send({message : "all fields are required"})
+//   }
+
+//   try {
+//     const users = await readData()
+//     if(users.length){
+//     const userFound = users.filter(async (user, index ) => {
+//       // console.log("checking");
+      
+//       if(user.email === email){
+
+//         if(user.password === password){
+//           console.log("correct 93");
+
+//           userIndex = index;
+//           users[userIndex].jswt = "you.are.welcome";
+//           await writeFile(users);
+//           console.log("97");
+//           // res.send({message : "data validated"})
+//           res
+//             .status(200)
+//             .send([
+//               {
+//                 user: user ,
+//                 session: user.jswt 
+//               },
+//             ]);
+            
+
+//         } else {
+//         res.status(404).json({ message: "password is incorrect!" });
+//         }
+
+//       } else {
+//         res.status(400).json({message : "email is incorrect!"})
+//       }
+//       // user.email === email && user.password === password ? userIndex = index : ""
+//     } );
+
+   
+
+//     } else {
+//       res.status(500).json({message : "email and password incorrect"})
+//     }
+    
+//   } catch (error) {
+//     // res.send({message : "Data fetching error"})
+//   }
+
+//   // const userFound = users.filter((user, index) => {
+//   //   if (user.email === email) {
+//   //     if (user.password === password) {
+//   //       loginUser = [{ ...userFound, jswt: "you.are.welcome!" }];
+//   //       res.status(200).json({ message: "sucess", user: loginUser });
+//   //       userIndex = index;
+//   //     } else {
+//   //       return res.status(200).json({ message: "password is incorrect!" });
+//   //     }
+//   //   } else {
+//   //     return res
+//   //       .status(200)
+//   //       .json({ message: "user with this email not exists!" });
+//   //   }
+//   // });
+//   // if (userFound.length) {
+//   //   users[userIndex].jswt = "you.are.welcome!";
+//   //   return;
+//   // }
+// };
 
 const checkSession = (req, res) => {
   if (!loginUser) {

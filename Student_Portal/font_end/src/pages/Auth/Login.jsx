@@ -3,17 +3,31 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { Link } from "react-router-dom";
 import SocialButton from "../../components/SocialButton";
+import axios from "axios";
+import Loader from "../../components/Loader";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [loader, setLoader] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Logged in successfully!");
+    try {
+      setLoader(true);
+      const data = await axios.post("/api/auth/login", form);
+      if (data) console.log(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoader(false);
+      setForm({ name: "", email: "", password: "", confirmPassword: "" });
+    }
+    
+    
     setForm({ email: "", password: "" });
   };
 
@@ -52,8 +66,13 @@ const Login = () => {
               onChange={handleChange}
               placeholder="••••••••"
             />
-            <Button type="submit" className="w-full">
-              Login
+            <Button
+              type="submit"
+              className="w-full flex justify-center items-center gap-3"
+            >
+              { loader  ? <Loader />  : '' }
+             
+               Login
             </Button>
             <p className="text-sm text-center text-gray-600">
               Don't have an account?{" "}
