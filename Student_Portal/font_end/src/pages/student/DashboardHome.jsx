@@ -1,4 +1,9 @@
+import { useUserContext } from "../../context/UserContext";
+
 const DashboardHome = () => {
+  const { activeUserData } = useUserContext()
+  console.log(activeUserData)
+
   return (
     <div className="bg-orange-300 p-6 rounded shadow">
       <h1 className="text-2xl font-semibold text-white mb-4">

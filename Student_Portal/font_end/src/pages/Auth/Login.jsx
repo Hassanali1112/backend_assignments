@@ -1,14 +1,18 @@
 import { useState } from "react";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SocialButton from "../../components/SocialButton";
 import axios from "axios";
 import Loader from "../../components/Loader";
+import { useUserContext } from "../../context/index";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loader, setLoader] = useState(false);
+  const { setActiveUserData } = useUserContext();
+
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,7 +23,12 @@ const Login = () => {
     try {
       setLoader(true);
       const data = await axios.post("/api/auth/login", form);
-      if (data) console.log(data);
+      if (data) {
+        setActiveUserData(data.data.user)
+        console.log(data.data.user);
+        navigate("/dashboard")
+      }
+
     } catch (error) {
       console.log(error);
     } finally {

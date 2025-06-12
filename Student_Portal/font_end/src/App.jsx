@@ -1,15 +1,15 @@
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 import AppRoutes from "./routes/AppRoutes";
+import { UserContextProvider } from "./context/index";
+
+
 
 function App() {
+  
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
-      {/* <Navbar /> */}
-      
+      <UserContextProvider>
         <AppRoutes />
-      
-      {/* <Footer /> */}
+      </UserContextProvider>
     </div>
   );
 }
