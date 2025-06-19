@@ -29,43 +29,43 @@ const writeFile = async (data) =>{
 const createNewUser = async (req, res) => {
   console.log("create user route")
 
-  const { name, email, password } = req.body;
+  // const { name, email, password } = req.body;
   
-  if (!name || !email || !password) {
-    return res.send("All fields are require!");
-  } 
+  // if (!name || !email || !password) {
+  //   return res.send("All fields are require!");
+  // } 
 
-try {
-  const users = await readData()
-  console.log(users)
-  if(users.length){
-    const userNotFound = users.filter((user) => user.email == email);
-    console.log(userNotFound)
-    if (userNotFound.length > 0) {
-      res.status(409).json({ message: "user with this email already exists!" });
+// try {
+//   const users = await readData()
+//   console.log(users)
+//   if(users.length){
+//     const userNotFound = users.filter((user) => user.email == email);
+//     console.log(userNotFound)
+//     if (userNotFound.length > 0) {
+//       res.status(409).json({ message: "user with this email already exists!" });
       
-    } else {
+//     } else {
      
-      const id = users.length;
-      const newUser = {
-        id: id + 1,
-        name,
-        email,
-        password,
-        role: false,
-      };
-      users.push(newUser);
+//       const id = users.length;
+//       const newUser = {
+//         id: id + 1,
+//         name,
+//         email,
+//         password,
+//         role: false,
+//       };
+//       users.push(newUser);
 
-      const final = await writeFile(users)
-      console.log(final)
+//       const final = await writeFile(users)
+//       console.log(final)
 
-      res.status(200).json(newUser);
+//       res.status(200).json(newUser);
       
-    }
-  }
-} catch (error) {
+//     }
+//   }
+// } catch (error) {
   
-}
+// }
   
 };
 
@@ -200,10 +200,9 @@ const getUser = async (req, res) => {
 // };
 
 const checkSession = async (req, res) => {
-  // console.log(req.body)
   
-  const {id} = req.body
-  console.log(id)
+  const { id } = req.query;
+  // console.log("id", id)
 
   if(!id){
     res.status(404).json({message : new Error()} )
@@ -211,18 +210,20 @@ const checkSession = async (req, res) => {
 
   try {
   const users = await readData();
-  // console.log(users)
 
-  const user = users.filter(userObj => userObj.id === id)
-  console.log(user)
-  if(user.length){
-    if ("jswt" in user[0]) {
-      res.status(200).json({ session: user[0].jswt });
+  const user = users.find(userObj => userObj.id == id)
+  console.log("user ",user)
+  if (Object.keys(user).length !== 0) {
+    console.log("jswt");
+
+    if ("jswt" in user) {
+      console.log("jswt");
+      res.status(200).json({ session: user.jswt });
     } else {
-      res.status(404).json({session : null})
+      res.status(404).json({ session: null });
     }
   } else {
-    res.status(404).json({ session : null });
+    res.status(404).json({ session: null });
   }
      
   } catch (error) {

@@ -11,6 +11,7 @@
     "name": "Hassan Ali",
     "email": "dev.hassanali63@gmail.com",
     "password": "111111",
-    "role": false
+    "role": false,
+    "jswt": "you.are.welcome"
   }
 ]

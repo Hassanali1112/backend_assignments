@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
+import axios from "axios";
 import Loader from "../../components/Loader";
 import Button from "../../components/Button";
+import { useUserContext } from "../../context/UserContext";
 
 const ApplyCourse = () => {
   const [form, setForm] = useState({
@@ -19,6 +21,8 @@ const ApplyCourse = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef();
+  const { activeUserData } = useUserContext()
+    
 
   const courses = [
     "Web Development",
@@ -103,16 +107,37 @@ const ApplyCourse = () => {
     return Object.keys(tempErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validate()) return;
 
+    try {
     setLoading(true);
+    const formData = new FormData()
+    formData.append("userId", activeUserData.id);
+    formData.append("name", form.fullName)
+    formData.append("email", form.email)
+    formData.append("phone", form.phone)
+    formData.append("cnic", form.cnic)
+    formData.append("course", form.course)
+    formData.append("campus", form.campus)
+    formData.append("timeSlot", form.timeSlot)
+    formData.append("image", form.image)
+
+
+       await axios.post(
+        "/api/applications/application", formData
+      )
+      .then((res)=> console.log(res))
+      
+    } catch (error) {
+      console.log(error)
+    }
 
     setTimeout(() => {
       console.log("Form Submitted: ", form);
-      alert("Application Submitted Successfully!");
+      // alert("Application Submitted Successfully!");
 
       // Reset form
       setForm({
