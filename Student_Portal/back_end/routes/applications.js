@@ -1,4 +1,4 @@
-const { applyForCourse } = require("../controllers/enrollment")
+const { applyForCourse, downloadIdCard } = require("../controllers/enrollment")
 const multer = require("multer");
 const express = require("express")
 
@@ -27,5 +27,6 @@ const upload = multer(
  const applicationsRouter = express.Router()
 
 applicationsRouter.post('/application', upload.single("image") ,applyForCourse)
+applicationsRouter.get("/id-card/:cnic", downloadIdCard);
 
 module.exports = applicationsRouter

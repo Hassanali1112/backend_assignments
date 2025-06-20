@@ -133,7 +133,39 @@ const applyForCourse = async (req, res) => {
   }
 };
 
-module.exports = {applyForCourse}
+const downloadIdCard = async (req, res)=>{
+
+  // const {cnic} = req.body
+  const { cnic } = req.params;
+
+
+  console.log("check cnic")
+  console.log(cnic)
+
+  try {
+    const allData = await readApplications()
+
+    console.log(allData)
+
+    const requiredData = allData.find(data => data.cnic === cnic)
+
+    console.log(requiredData)
+
+
+
+    if(!requiredData){
+      return res.status(401).json({ message : `data not found found`})
+    }
+
+    return res.status(201).json(requiredData)
+    
+  } catch (error) {
+    return res.send(new Error())
+  }
+  
+}
+
+module.exports = {applyForCourse, downloadIdCard}
 
 // _______________________________________________________________________________________________________-
 
