@@ -30,9 +30,14 @@ const DownloadIDCard = () => {
 
   const handleDownload = async () => {
     const element = document.getElementById("id-card");
-    const canvas = await html2canvas(element);
-    const dataURL = canvas.toDataURL("image/png");
+    const canvas = await html2canvas(element, {
+      useCORS: true, // 🔑 Enable CORS
+      allowTaint: false, // Optional: more strict CORS behavior
+      backgroundColor: "#fff", // Ensure white background
+      scale: 2, // Optional: improve image resolution
+    });
 
+    const dataURL = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = dataURL;
     link.download = "student-id-card.png";
@@ -85,6 +90,7 @@ const DownloadIDCard = () => {
                     src={student.imageUrl}
                     alt="Student"
                     className="w-full h-full object-cover"
+                    crossOrigin="anonymous"
                   />
                 ) : (
                   <p>No Image</p>
