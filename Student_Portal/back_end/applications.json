@@ -1,0 +1,16 @@
+[
+  {
+    "id": "24c55fe0-9b3c-424d-97e5-50a0d51d60b4",
+    "userId": "2",
+    "name": "Hassan Ali",
+    "email": "hassanali0111272@gmail.com",
+    "phone": "+923122967402",
+    "cnic": "33201-3671443-5",
+    "course": "Data Science",
+    "campus": "Headoffice",
+    "timeSlot": "11:00 AM - 1:00 PM",
+    "imageUrl": "https://res.cloudinary.com/dudgnmh83/image/upload/v1750383647/Students_Images/1750383644969_WhatsApp%20Image%202025-03-31%20at%2011.43.33%20PM.jpeg.jpg",
+    "status": "pending",
+    "createdAt": "2025-06-20T01:40:47.213Z"
+  }
+]

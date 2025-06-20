@@ -3,6 +3,7 @@ const path = require("path");
 // const multer = require("multer");
 const cloudinary = require("cloudinary").v2
 require("dotenv").config();
+const { v4: uuidv4 } = require("uuid");
 
 const filePath = path.join(__dirname, "../applications.json");
 
@@ -15,7 +16,7 @@ cloudinary.config({
 });
 
 const uploadImageToCloudinary = (buffer, fileName) =>{
-  return new Promise((reject, resolve)=>{
+  return new Promise((resolve, reject)=>{
     cloudinary.uploader.upload_stream(
       {
         resource_type : "image",
@@ -54,13 +55,14 @@ async function writeApplications(applications) {
 
 const applyForCourse = async (req, res) => {
 
- console.log(26 , req.body)
-  console.log(req.file)
+//  console.log(26 , req.body)
+  // console.log(req.file)
+
 
   // res.send("Hassn ali")
 
   const image = req.file
-  console.log("image", image)
+  // console.log("image", image)
   
   const { userId, name, email, phone, cnic, course, campus, timeSlot } =
     req.body;
@@ -77,13 +79,18 @@ const applyForCourse = async (req, res) => {
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
+  console.log("new");
+
 
   const uploadImage = await uploadImageToCloudinary(
     image.buffer,
     image.originalname
   );
 
+  console.log("cloudinary upload",uploadImage)
+
   try {
+    console.log("try")
     const applications = await readApplications();
 
     // check if user has already applied (status not rejected)
@@ -99,7 +106,7 @@ const applyForCourse = async (req, res) => {
     }
 
     const newApplication = {
-      // id: uuidv4(),
+      id: uuidv4(),
       userId,
       name,
       email,
@@ -108,7 +115,7 @@ const applyForCourse = async (req, res) => {
       course,
       campus,
       timeSlot,
-      imageUrl,
+      imageUrl: uploadImage.secure_url,
       status: "pending", // by default pending
       createdAt: new Date().toISOString(),
     };
@@ -121,7 +128,7 @@ const applyForCourse = async (req, res) => {
       application: newApplication,
     });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
