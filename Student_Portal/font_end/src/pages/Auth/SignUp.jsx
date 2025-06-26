@@ -16,13 +16,13 @@ const SignUp =  () => {
   });
   const [loader, setLoader] = useState(false)
 
-  const checkSession = async () =>{
-    await session(2, navigate, setLoader)
-  }
+  // const checkSession = async () =>{
+  //   await session(2, navigate, setLoader)
+  // }
   
-    useEffect(()=>{
-      checkSession()
-    },[])
+    // useEffect(()=>{
+    //   checkSession()
+    // },[])
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
