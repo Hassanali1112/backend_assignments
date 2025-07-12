@@ -1,8 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import Loader from "../../components/Loader";
 import Button from "../../components/Button";
-import { useUserContext } from "../../context/UserContext";
+// import { useUserContext } from "../../context/UserContext";
+import { session } from "../Auth";
+import { useNavigate } from "react-router-dom";
 
 const ApplyCourse = () => {
   const [form, setForm] = useState({
@@ -16,13 +18,43 @@ const ApplyCourse = () => {
     image: null,
     agreement: false,
   });
+  
+
+  const [userId, setUserId] = useState('');
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+    
+
+        const response = await session();
+        
+
+
+
+        if (response.statusText.toLowerCase() !== "ok") {
+          navigate("/login");
+          return null;
+        }
+        
+        setUserId(response.data.data[0]._id)
+        return response;
+      } catch (error) {
+        
+        console.log(error);
+      }
+    };
+    fetchUser()
+    
+  }, []);
 
   const [errors, setErrors] = useState({});
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef();
-  const { activeUserData } = useUserContext()
-    
+  // const { activeUserData } = useUserContext()
 
   const courses = [
     "Web Development",
@@ -113,26 +145,24 @@ const ApplyCourse = () => {
     if (!validate()) return;
 
     try {
-    setLoading(true);
-    const formData = new FormData()
-    formData.append("userId", activeUserData.id);
-    formData.append("name", form.fullName)
-    formData.append("email", form.email)
-    formData.append("phone", form.phone)
-    formData.append("cnic", form.cnic)
-    formData.append("course", form.course)
-    formData.append("campus", form.campus)
-    formData.append("timeSlot", form.timeSlot)
-    formData.append("image", form.image)
+      setLoading(true);
+      const formData = new FormData();
+      formData.append("userId", userId);
+      formData.append("name", form.fullName);
+      formData.append("email", form.email);
+      formData.append("phone", form.phone);
+      formData.append("cnic", form.cnic);
+      formData.append("courseSelect", form.course);
+      formData.append("campus", form.campus);
+      formData.append("timeSlot", form.timeSlot);
+      formData.append("image", form.image);
+      formData.append("agreement", form.agreement);
 
-
-       await axios.post(
-        "/api/applications/application", formData
-      )
-      .then((res)=> console.log(res))
-      
+      await axios
+        .post("/api/applications/application", formData)
+        .then((res) => console.log(res));
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
 
     setTimeout(() => {
@@ -158,8 +188,8 @@ const ApplyCourse = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto bg-orange-300  shadow-md rounded-md p-8">
-      <h2 className="text-2xl font-semibold text-white mb-6 text-center">
+    <div className="max-w-3xl mx-auto bg-blue-100  shadow-md rounded-md p-8">
+      <h2 className="text-2xl font-semibold text-black mb-6 text-center">
         Apply for a Course
       </h2>
 

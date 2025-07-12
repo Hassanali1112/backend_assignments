@@ -1,11 +1,9 @@
-const fs = require("fs").promises;
-const path = require("path");
-// const multer = require("multer");
 const cloudinary = require("cloudinary").v2
 require("dotenv").config();
-const { v4: uuidv4 } = require("uuid");
+const { default: mongoose } = require("mongoose");
+const Course = require("../models/course.models");
 
-const filePath = path.join(__dirname, "../applications.json");
+
 
 // cloudinary configuration
 
@@ -14,6 +12,8 @@ cloudinary.config({
   api_key : process.env.CLOUDINARY_API_KEY,
   api_secret : process.env.CLOUDINARY_API_SECRET,
 });
+
+// upload image to cloudinary
 
 const uploadImageToCloudinary = (buffer, fileName) =>{
   return new Promise((resolve, reject)=>{
@@ -34,138 +34,108 @@ const uploadImageToCloudinary = (buffer, fileName) =>{
   })
 }
 
-async function readApplications() {
-  try {
-    const data = await fs.readFile(filePath, "utf8");
-    return JSON.parse(data);
-  } catch (err) {
-    // If file doesn't exist, return empty array
-    if (err.code === "ENOENT") return [];
-    throw err;
-  }
-}
-
-async function writeApplications(applications) {
-  try {
-    await fs.writeFile(filePath, JSON.stringify(applications, null, 2));
-  } catch (err) {
-    throw err;
-  }
-}
+// course applicaion function
 
 const applyForCourse = async (req, res) => {
 
-//  console.log(26 , req.body)
-  // console.log(req.file)
-
-
-  // res.send("Hassn ali")
-
-  const image = req.file
-  // console.log("image", image)
-  
-  const { userId, name, email, phone, cnic, course, campus, timeSlot } =
-    req.body;
-
-  if (
-    !userId ||
-    !name ||
-    !email ||
-    !phone ||
-    !cnic ||
-    !course ||
-    !campus ||
-    !timeSlot 
-  ) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-  console.log("new");
-
-
-  const uploadImage = await uploadImageToCloudinary(
-    image.buffer,
-    image.originalname
-  );
-
-  console.log("cloudinary upload",uploadImage)
-
   try {
-    console.log("try")
-    const applications = await readApplications();
+    const image = req.file;
 
-    // check if user has already applied (status not rejected)
-    const existingApplication = applications.find(
-      (app) => app.userId === userId && app.status !== "rejected"
-    );
-
-    if (existingApplication) {
-      return res.status(400).json({
-        message:
-          "You have already applied. Wait until your previous request is processed.",
-      });
-    }
-
-    const newApplication = {
-      id: uuidv4(),
+    const {
       userId,
       name,
       email,
       phone,
       cnic,
-      course,
+      courseSelect,
       campus,
       timeSlot,
-      imageUrl: uploadImage.secure_url,
-      status: "pending", // by default pending
-      createdAt: new Date().toISOString(),
-    };
+      agreement,
+    } = req.body;
 
-    applications.push(newApplication);
-    await writeApplications(applications);
+    if (
+      !userId ||
+      !name ||
+      !email ||
+      !phone ||
+      !cnic ||
+      !courseSelect ||
+      !campus ||
+      !timeSlot ||
+      !image ||
+      !agreement
+    ) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
-    return res.status(201).json({
-      message: "Application submitted successfully",
-      application: newApplication,
+    const uploadImage = await uploadImageToCloudinary(
+      image.buffer,
+      image.originalname
+    );
+
+    console.log(uploadImage)
+
+    const course = await new Course({
+      userId,
+      name,
+      email,
+      phone,
+      cnic,
+      courseSelect,
+      campus,
+      timeSlot,
+      image : uploadImage.secure_url,
+      agreement,
     });
+
+    console.log(course);
+
+    
+    await course.save()
+
+    console.log("done");
+  
+    res.status(201).json({success : true, message : "Application submit successfully" , data : course})
+
+   
   } catch (error) {
-    // console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ success : false , message : "Something is wrong", data : error });
   }
+
+  
 };
+
+const getAllApplications = async (req, res) =>{
+  console.log("request received")
+  try {
+    const data = await Course.find()
+    res.send(data)
+  } catch (error) {
+    
+  }
+}
+
+// find application for download
 
 const downloadIdCard = async (req, res)=>{
 
-  // const {cnic} = req.body
   const { cnic } = req.params;
 
 
-  console.log("check cnic")
   console.log(cnic)
 
   try {
-    const allData = await readApplications()
+    const course = await Course.findOne({cnic})
 
-    console.log(allData)
-
-    const requiredData = allData.find(data => data.cnic === cnic)
-
-    console.log(requiredData)
-
-
-
-    if(!requiredData){
-      return res.status(401).json({ message : `data not found found`})
-    }
-
-    return res.status(201).json(requiredData)
-    
+    return res.status(201).json(course);
   } catch (error) {
-    return res.send(new Error())
+    res.status(400).json(error)
   }
+
   
 }
 
-module.exports = {applyForCourse, downloadIdCard}
+module.exports = {applyForCourse, downloadIdCard, getAllApplications}
 
 // _______________________________________________________________________________________________________-
 

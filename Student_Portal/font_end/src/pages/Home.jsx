@@ -1,13 +1,43 @@
 import { Link } from "react-router-dom";
 import Button from "../components/Button";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { session } from "./Auth";
 
 const Home = () => {
+  const [data, setData] = useState(null);
+
+  const navigate = useNavigate();
+
+  const checkUserAvailiblity = async () => {
+    return await session();
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await checkUserAvailiblity();
+
+        setData(response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUser();
+
+    if (!data) {
+      navigate("/");
+    } else {
+      navigate("/dashboard");
+    }
+  }, []);
+
   return (
-    <div className="space-y-16">
+    <div className="space-y-16  ">
       {/* Hero Section */}
-      <section className="bg-blue-600 text-white py-20">
+      <section className="bg-blue-800 text-white py-20">
         <div className="container mx-auto text-center px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 ">
             Welcome to the Student Portal
           </h1>
           <p className="text-lg md:text-xl mb-6">
@@ -70,7 +100,7 @@ const Home = () => {
               hassle-free.
             </p>
             <Link to="/about">
-              <Button >Learn More</Button>
+              <Button>Learn More</Button>
             </Link>
           </div>
           <img

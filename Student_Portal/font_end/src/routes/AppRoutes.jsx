@@ -11,6 +11,7 @@ import ApplyCourse from "../pages/student/ApplyCourse";
 import ApplicationStatus from "../pages/student/ApplicationStatus";
 import DownloadCard from "../pages/student/DownloadCard";
 import Layout from "../pages/Layout";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 
 const AppRoutes = () => {
   return (
@@ -30,6 +31,7 @@ const AppRoutes = () => {
         <Route path="application-status" element={<ApplicationStatus />} />
         <Route path="download-card" element={<DownloadCard />} />
       </Route>
+      <Route path="/admin" element={<AdminDashboard />} />
     </Routes>
   );
 };

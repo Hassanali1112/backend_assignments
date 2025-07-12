@@ -2,9 +2,11 @@ import { Link, NavLink } from "react-router-dom";
 
 const Navbar = () => {
   return (
-    <nav className="bg-blue-600 text-white p-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-xl font-bold">Student Portal</h1>
+    <nav className="bg-blue-600 text-white p-4 shadow-md  w-full">
+      <div className="container mx-auto flex justify-between items-center px-4">
+        <h1 className="text-xl font-bold cursor-pointer">
+          <Link to='/'>Student Portal</Link>
+        </h1>
         <div className="space-x-4">
           <NavLink
             to="/"

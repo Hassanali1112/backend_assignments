@@ -1,32 +1,33 @@
-const { applyForCourse, downloadIdCard } = require("../controllers/enrollment")
+const {
+  applyForCourse,
+  downloadIdCard,
+  getAllApplications,
+} = require("../controllers/enrollment");
 const multer = require("multer");
-const express = require("express")
-
+const express = require("express");
 
 // multer initialization
 
 const storage = multer.memoryStorage();
 
-const upload = multer(
-  {
-    limits : {
-      fileSize : 1 * 1024 * 1024
-    },
-    fileFilter : (req,file, cb) => {
-      if(file.mimetype.startsWith("image/")){
-        cb(null, true)
-      } else {
-        cb( new Error("Only image file is required!"), false)
-      }
-    },
-    storage,
-  }
-)
+const upload = multer({
+  limits: {
+    fileSize: 1 * 1024 * 1024,
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only image file is required!"), false);
+    }
+  },
+  storage,
+});
 
+const applicationsRouter = express.Router();
 
- const applicationsRouter = express.Router()
-
-applicationsRouter.post('/application', upload.single("image") ,applyForCourse)
+applicationsRouter.post("/application", upload.single("image"), applyForCourse);
+applicationsRouter.get("/getapplications", getAllApplications);
 applicationsRouter.get("/id-card/:cnic", downloadIdCard);
 
-module.exports = applicationsRouter
+module.exports = applicationsRouter;

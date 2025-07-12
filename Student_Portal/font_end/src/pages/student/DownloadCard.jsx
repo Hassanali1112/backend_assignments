@@ -1,11 +1,34 @@
-import { useState } from "react";
+import { useState, } from "react";
 import html2canvas from "html2canvas";
 import axios from "axios";
+
+import { useEffect } from "react";
+import { session } from "../Auth";
+import { useNavigate } from "react-router-dom";
 
 const DownloadIDCard = () => {
   const [cnic, setCnic] = useState("");
   const [student, setStudent] = useState(null);
   const [error, setError] = useState("");
+
+   const navigate = useNavigate();
+
+   useEffect(() => {
+     const fetchUser = async () => {
+       try {
+         const response = await session();
+
+         console.log(response);
+
+         if (response.statusText.toLowerCase() !== "ok") {
+           navigate("/login");
+         }
+       } catch (err) {
+         console.error(err);
+       }
+     };
+     fetchUser();
+   }, []);
 
   const handleSearch = async () => {
     setError("");
@@ -18,6 +41,7 @@ const DownloadIDCard = () => {
 
     try {
       const res = await axios.get(`/api/applications/id-card/${cnic}`);
+      console.log(res)
       setStudent(res.data);
     } catch (err) {
       if (err.response) {
@@ -45,7 +69,7 @@ const DownloadIDCard = () => {
   };
 
   return (
-    <div className="bg-orange-300 mx-auto shadow-md h-auto rounded-md p-6">
+    <div className="bg-blue-300 mx-auto shadow-md h-auto rounded-md p-6">
       <h2 className="text-2xl font-bold text-center text-white mb-4">
         Download Student ID Card
       </h2>
@@ -56,11 +80,11 @@ const DownloadIDCard = () => {
           placeholder="Enter CNIC (12345-1234567-1)"
           value={cnic}
           onChange={(e) => setCnic(e.target.value)}
-          className="flex-1 border border-orange-400 rounded px-3 py-2 focus:outline-orange-500"
+          className="flex-1 border border-blue-400 rounded px-3 py-2 focus:outline-blue-500"
         />
         <button
           onClick={handleSearch}
-          className="bg-orange-400 text-white px-4 py-2 rounded hover:bg-orange-500 "
+          className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-500 "
         >
           Search
         </button>
@@ -73,7 +97,7 @@ const DownloadIDCard = () => {
           <div
             id="id-card"
             className="border rounded-lg shadow p-4 py-4 w-full  text-center"
-            style={{ backgroundColor: "#ffffff", color: "#000000" }}
+            style={{ overflow: "hidden", backgroundColor: "white", color : "gray" }}
           >
             <h3
               className="text-lg font-semibold pb-2 mb-3 border-b"
@@ -85,9 +109,9 @@ const DownloadIDCard = () => {
             <div className="flex flex-col md:flex-row items-center gap-6 px-4">
               {/* Left Section - Image */}
               <div className="w-40 h-40 border rounded overflow-hidden">
-                {student.imageUrl ? (
+                {student.image ? (
                   <img
-                    src={student.imageUrl}
+                    src={student.image}
                     alt="Student"
                     className="w-full h-full object-cover"
                     crossOrigin="anonymous"
@@ -98,7 +122,10 @@ const DownloadIDCard = () => {
               </div>
 
               {/* Right Section - Info */}
-              <div className="text-left space-y-1 text-sm md:text-base">
+              <div
+                className="text-left space-y-1 text-sm md:text-base "
+                style={{ fontWeight: 500 }}
+              >
                 <p>
                   <strong>Name:</strong> {student.name}
                 </p>
@@ -106,13 +133,17 @@ const DownloadIDCard = () => {
                   <strong>CNIC:</strong> {student.cnic}
                 </p>
                 <p>
-                  <strong>Course:</strong> {student.course}
+                  <strong>Course:</strong> {student.courseSelect}
                 </p>
                 <p>
                   <strong>Campus:</strong> {student.campus}
                 </p>
                 <p>
                   <strong>Time Slot:</strong> {student.timeSlot}
+                </p>
+                <p>
+                  <strong>status:</strong>{" "}
+                  {student.status ? "approved" : "pending"}
                 </p>
               </div>
             </div>
@@ -122,7 +153,7 @@ const DownloadIDCard = () => {
         {student && (
           <button
             onClick={handleDownload}
-            className="mt-4 w-full bg-orange-400 text-white py-2 rounded hover:bg-orange-500"
+            className="mt-4 w-full bg-blue-400 text-white py-2 rounded hover:bg-blue-500"
           >
             Download ID Card
           </button>

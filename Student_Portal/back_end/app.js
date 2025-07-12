@@ -1,39 +1,40 @@
-const express = require("express")
-const authRoutes = require("./routes/auth")
-const mongoose = require("./database/database.config")
-require("dotenv").config()
+const express = require("express");
 const cors = require("cors");
-const  applicationsRouter  = require("./routes/applications");
+const dotenv = require("dotenv");
+const mongoose = require("./database/database.config");
+const authRoutes = require("./routes/auth");
+const applicationsRouter = require("./routes/applications");
+const cookieParser = require("cookie-parser");
+
+
+dotenv.config();
+
 const app = express();
+const PORT = process.env.PORT || 5000;
 
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
 
-app.use(cors())
-app.use(express.json())
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*")
-  
-  next();
+// MongoDB connection log
+mongoose.connection.once("open", () => {
+  console.log(" MongoDB Connected");
+});
+
+// Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/applications", applicationsRouter);
+
+// Default route
+app.get("/", (req, res) => {
+  console.log("hello from /")
+  res.status(200).send(" Server is up and running!");
 });
 
 
-const port= process.env.PORT
-
-mongoose.connection.on("open", () => {
-  console.log(`MongoDB Connected`);
+// Server
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
 
-
-app.get("/", (req, res)=>{
-  console.log("here is server")
-  res.send("hello from server")
-})
-
-app.use('/api/auth',authRoutes)
-
-app.use('/api/applications', applicationsRouter)
-
-
-
-
-
-app.listen(port, ()=> console.log(`server in on http://localhost:${port}`))

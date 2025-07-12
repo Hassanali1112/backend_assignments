@@ -1,4 +1,36 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { session } from "./Auth";
+
 const About = () => {
+  const [data, setData] = useState(null);
+
+
+  const navigate = useNavigate();
+
+  const checkUserAvailiblity = async () => {
+    return await session();
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await checkUserAvailiblity();
+
+        setData(response);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchUser();
+
+    if (!data) {
+      navigate("/about");
+    } else {
+      navigate("/dashboard");
+    }
+  }, []);
+
   return (
     <section className="container mx-auto px-4 py-16">
       <div className="text-center mb-10">

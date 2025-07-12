@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SocialButton from "../../components/SocialButton";
 import axios from "axios";
 import Loader from "../../components/Loader";
+import { session } from "./index";
+
 
 
 const SignUp =  () => {
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -15,14 +18,22 @@ const SignUp =  () => {
     confirmPassword: "",
   });
   const [loader, setLoader] = useState(false)
+  const navigate = useNavigate()
 
-  // const checkSession = async () =>{
-  //   await session(2, navigate, setLoader)
-  // }
-  
-    // useEffect(()=>{
-    //   checkSession()
-    // },[])
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await session();
+
+        if (response.statusText.toLowerCase() === "ok" && !response.data.data.length === 0) {
+          navigate("/dashboard");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -52,7 +63,7 @@ const SignUp =  () => {
   };
 
   return (
-    <section className="min-h-full flex flex-col md:flex-row border-black/15 rounded-xl border-1 overflow-hidden">
+    <section className="min-h-full flex flex-col md:flex-row border-black/15 rounded overflow-hidden">
       {/* Left image section */}
       <div className="md:w-1/2 w-full">
         <img
@@ -63,7 +74,7 @@ const SignUp =  () => {
       </div>
 
       {/* Right form section */}
-      <div className="md:w-1/2 w-full flex items-center justify-center p-8">
+      <div className="md:w-1/2 w-full flex items-center justify-center bg-white p-8">
         <div className="max-w-md w-full space-y-6">
           <h1 className="text-3xl font-semibold text-center text-gray-800">
             Create Your Account
