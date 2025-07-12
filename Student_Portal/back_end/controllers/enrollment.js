@@ -38,6 +38,8 @@ const uploadImageToCloudinary = (buffer, fileName) =>{
 
 const applyForCourse = async (req, res) => {
 
+  console.log("request for course")
+
   try {
     const image = req.file;
 

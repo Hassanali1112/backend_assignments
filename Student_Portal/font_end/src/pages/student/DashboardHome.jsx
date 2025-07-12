@@ -160,9 +160,9 @@ const DashboardHome = () => {
       try {
         console
         const response = await session();
-        console.log(response)
-        setActiveUser(response.data.data[0])
-        if (response.statusText.toLowerCase() !== "ok") {
+        console.log(response.statusText)
+        setActiveUser(response.data.data)
+        if (response.statusText != "Created") {
           return navigate("/login");
         }
 

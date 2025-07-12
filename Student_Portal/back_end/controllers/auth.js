@@ -105,10 +105,8 @@ const login = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const data = req.user;
-  // console.log("req.user",data)
-  res.status(201).json({ success: true, data: "success" });
-   
-  //  res.status(201).json({ success: true, data : data });
+ 
+   res.status(201).json({ success: true, data : data });
     
   } catch (error) {
     console.log("catch errorrrr")

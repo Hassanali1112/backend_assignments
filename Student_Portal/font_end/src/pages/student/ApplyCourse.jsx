@@ -159,7 +159,7 @@ const ApplyCourse = () => {
       formData.append("agreement", form.agreement);
 
       await axios
-        .post("/api/applications/application", formData)
+        .post("http://localhost:5000/api/applications/application", formData)
         .then((res) => console.log(res));
     } catch (error) {
       console.log(error);

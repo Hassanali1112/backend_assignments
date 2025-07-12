@@ -23,12 +23,22 @@ const Login = () => {
         const response = await session();
 
         console.log(response);
-        if (response.statusText.toLowerCase() === "ok" && response.data.data.length !== 0 ) {
-          console.log(response.data.data);
-          // navigate("/dashboard");
+        
+        if (
+          response.statusText === "Created" &&
+          response.data.data !== 0
+        ) {
+        if(response.data.data.role === "teacher"){
+          
+          navigate("/admin")
+        } else{
+          navigate("/dashboard");
+        }
+          
+          
         }
       } catch (err) {
-        // console.error(err);
+        console.error(err);
       }
     };
     fetchUser();

@@ -39,9 +39,9 @@ const verifyToken = async (req, res, next) => {
   req.user = userFound
 
   console.log(userFound)
-  res.send({data : "data"})
+  
 
-    // next()
+    next()
 
   } catch (error) {
     console.log("catch")
