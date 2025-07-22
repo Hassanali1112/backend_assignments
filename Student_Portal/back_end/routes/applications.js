@@ -2,6 +2,7 @@ const {
   applyForCourse,
   downloadIdCard,
   getAllApplications,
+  approveOrRejectApplication,
 } = require("../controllers/enrollment");
 const multer = require("multer");
 const express = require("express");
@@ -29,5 +30,6 @@ const applicationsRouter = express.Router();
 applicationsRouter.post("/application", upload.single("image"), applyForCourse);
 applicationsRouter.get("/getapplications", getAllApplications);
 applicationsRouter.get("/id-card/:cnic", downloadIdCard);
+applicationsRouter.patch("/toggle-status", approveOrRejectApplication);
 
 module.exports = applicationsRouter;

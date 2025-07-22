@@ -1,115 +1,3 @@
-// import { useEffect, useState } from "react";
-// import { session } from "../Auth";
-// import { useNavigate } from "react-router-dom";
-// import {
-//   BarChart,
-//   Bar,
-//   XAxis,
-//   YAxis,
-//   Tooltip,
-//   ResponsiveContainer,
-//   CartesianGrid,
-// } from "recharts";
-
-// const DashboardHome = () => {
-//   const navigate = useNavigate();
-//   const [user, setUser] = useState(null);
-
-//   useEffect(() => {
-//     const fetchUser = async () => {
-//       try {
-//         const response = await session();
-//         if (response.statusText.toLowerCase() !== "ok") {
-//           navigate("/login");
-//         } else {
-//           setUser(response.data);
-//         }
-//       } catch (err) {
-//         console.error(err);
-//         navigate("/login");
-//       }
-//     };
-//     fetchUser();
-//   }, [navigate]);
-
-//   const attendance = 92; // dummy %
-//   const tasks = 7; // dummy pending
-//   const subjects = [
-//     { name: "HTML", count: 10 },
-//     { name: "CSS", count: 8 },
-//     { name: "JS", count: 12 },
-//     { name: "React", count: 6 },
-//   ];
-
-//   const upcomingClass = {
-//     topic: "React State Management",
-//     time: "Tomorrow at 10:00 AM",
-//   };
-
-//   return (
-//     <div className="w-full p-4 space-y-6">
-//       {/* Header */}
-//       <div className="flex justify-between items-center flex-wrap">
-//         <h1 className="text-xl font-semibold text-gray-800">
-//           Welcome, {user?.name || "Student"}
-//         </h1>
-//       </div>
-
-//       {/* Top 3 Cards */}
-//       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-//         <div className="bg-white shadow rounded-lg p-4 flex flex-col justify-between">
-//           <h2 className="text-lg font-semibold text-gray-700 mb-2">
-//             Attendance
-//           </h2>
-//           <p className="text-3xl font-bold text-green-600">{attendance}%</p>
-//           <p className="text-sm text-gray-500 mt-1">Overall attendance</p>
-//         </div>
-
-//         <div className="bg-white shadow rounded-lg p-4 flex flex-col justify-between">
-//           <h2 className="text-lg font-semibold text-gray-700 mb-2">
-//             Pending Tasks
-//           </h2>
-//           <p className="text-3xl font-bold text-orange-500">{tasks}</p>
-//           <p className="text-sm text-gray-500 mt-1">Assignments or quizzes</p>
-//         </div>
-
-//         <div className="bg-white shadow rounded-lg p-4">
-//           <h2 className="text-lg font-semibold text-gray-700 mb-4">
-//             Subjects Overview
-//           </h2>
-//           <div className="h-40">
-//             <ResponsiveContainer width="100%" height="100%">
-//               <BarChart data={subjects}>
-//                 <CartesianGrid strokeDasharray="3 3" />
-//                 <XAxis dataKey="name" />
-//                 <YAxis />
-//                 <Tooltip />
-//                 <Bar dataKey="count" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-//               </BarChart>
-//             </ResponsiveContainer>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Upcoming Class */}
-//       <div className="bg-white shadow rounded-lg p-6">
-//         <h2 className="text-lg font-semibold text-gray-700 mb-2">
-//           Upcoming Class
-//         </h2>
-//         <p className="text-xl font-medium text-blue-600">
-//           {upcomingClass.topic}
-//         </p>
-//         <p className="text-gray-600 text-sm mt-1">{upcomingClass.time}</p>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default DashboardHome;
-
-
-// ____________________________________________________________________________
-
 import { useEffect, useState } from "react";
 import { session } from "../Auth";
 import { useNavigate } from "react-router-dom";
@@ -160,11 +48,10 @@ const DashboardHome = () => {
       try {
         console
         const response = await session();
-        console.log(response.statusText)
-        setActiveUser(response.data.data)
-        if (response.statusText != "Created") {
+        if (!response || response.statusText.toLowerCase() != "ok") {
           return navigate("/login");
         }
+        setActiveUser(response.data.data);
 
         setUser(response.data); // optional enhancement if user data needed
 

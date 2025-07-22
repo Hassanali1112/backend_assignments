@@ -20,18 +20,29 @@ const Login = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await session();
+        console.log("checking")
+        // const response = await axios.get(
+        //   "http://localhost:5000/api/auth/user/get/",
+        //   {
+        //     withCredentials: true,
+        //   }
+        // );
+        const response = await session()
 
-        console.log(response);
+        if(response.statusText.toLowerCase() !== "ok"){
+          navigate("/login")
+        }
         
         if (
-          response.statusText === "Created" &&
+          response.statusText.toLowerCase() === "ok" &&
           response.data.data !== 0
         ) {
         if(response.data.data.role === "teacher"){
-          
-          navigate("/admin")
+          console.log("teacher")
+          // navigate("/admin")
         } else{
+          
+
           navigate("/dashboard");
         }
           
@@ -52,14 +63,22 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoader(true);
-      const data = await axios.post("/api/auth/login", form);
+      const response = await axios.post("http://localhost:5000/api/auth/login", form, {
+        withCredentials : true,
+      });
 
-      console.log(data)
+      console.log(response)
+      console.log(response.data.user.role.toUpperCase())
       
 
-      if (data.data.success) {
-        setActiveUserData(data.data.user);
-        navigate("/dashboard");
+      if (response && response.data.success) {
+        if(response.data.user.role.toLowerCase() === "student"){
+          setActiveUserData(response.data.user);
+          navigate("/dashboard");
+        } else {
+          setActiveUserData(response.data.user);
+          navigate("/admin");
+        }
       }
     } catch (error) {
       console.log(error);

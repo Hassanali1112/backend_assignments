@@ -1,16 +1,28 @@
 import { useState } from "react";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, Navigate, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
+import axios from "axios";
 
 
 const DashboardLayout = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate()
 
 
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const closeSidebar = () => setIsOpen(false);
-  
+  const logout = async () =>{
+    try {
+      console.log("logout active")
+     const response = await axios.get("/api/auth/logout")
+     localStorage.clear()
+     navigate("/login")
+     console.log(response)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div className="min-h-screen flex bg-blue-200 relative ">
@@ -96,6 +108,16 @@ const DashboardLayout = () => {
             onClick={closeSidebar}
           >
             Download Card
+          </NavLink>
+          <NavLink
+            // to="/dashboard/download-card"
+            className={
+                              //  "block p-2 bg-blue-400 text-white rounded"
+                "block p-2 text-gray-800 rounded hover:bg-blue-200"
+            }
+            onClick={logout}
+          >
+            Logout
           </NavLink>
         </nav>
       </aside>

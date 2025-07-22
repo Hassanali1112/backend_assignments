@@ -31,15 +31,14 @@ const ApplyCourse = () => {
 
         const response = await session();
         
-
-
-
-        if (response.statusText.toLowerCase() !== "ok") {
-          navigate("/login");
-          return null;
-        }
+        console.log(response.data.data._id)
+         if (response.statusText.toLowerCase() !== "ok") {
+           navigate("/login");
+           return null
+         }
         
-        setUserId(response.data.data[0]._id)
+        
+        setUserId(response.data.data._id)
         return response;
       } catch (error) {
         
@@ -157,9 +156,10 @@ const ApplyCourse = () => {
       formData.append("timeSlot", form.timeSlot);
       formData.append("image", form.image);
       formData.append("agreement", form.agreement);
+      console.log(form)
 
       await axios
-        .post("http://localhost:5000/api/applications/application", formData)
+        .post("/api/applications/application", formData)
         .then((res) => console.log(res));
     } catch (error) {
       console.log(error);
